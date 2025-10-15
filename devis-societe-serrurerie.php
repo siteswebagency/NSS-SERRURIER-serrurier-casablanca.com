@@ -14,15 +14,16 @@
          background-size: 111.5%;
 
       }
-            .error {
-            color: red;
-        }
+
+      .error {
+         color: red;
+      }
    </style>
-   
+
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <meta name="google-site-verification" content="moH3eIIcXw150DLxdlRF-z1aXr3pyBinwZjjtn4SuFI" />
 
-   
+
 
    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
       integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc"
@@ -56,7 +57,7 @@
    <!-- Library CSS -->
    <link href="css/bootstrap.css" rel="stylesheet" />
    <link href="css/style.cantact&devis.css" rel="stylesheet" />
-   
+
    <link href="css/fonts/font-awesome/css/font-awesome.css" rel="stylesheet" />
    <link href="css/animations.css" media="screen" rel="stylesheet" />
    <link href="css/superfish.css" media="screen" rel="stylesheet" />
@@ -78,6 +79,54 @@
    <link href="img/ico/apple-touch-icon-72.png" rel="apple-touch-icon" sizes="72x72" />
    <link href="img/ico/apple-touch-icon-114.png" rel="apple-touch-icon" sizes="114x114" />
    <link href="img/ico/apple-touch-icon-144.png" rel="apple-touch-icon" sizes="144x144" />
+   <style>
+      /* Container du reCAPTCHA */
+      .g-recaptcha {
+         width: 100%;
+         /* Laisse le reCAPTCHA occuper toute la largeur disponible */
+         max-width: 400px;
+         /* Limite la largeur maximale du widget */
+         margin: 0 auto;
+         /* Centre le widget horizontalement */
+      }
+
+      /* Erreur reCAPTCHA */
+      #recaptchaError {
+         text-align: center;
+         /* Centrer le texte d'erreur */
+         font-size: 14px;
+         /* Taille de police de l'erreur */
+         margin-top: 10px;
+         /* Espace entre le reCAPTCHA et le message d'erreur */
+      }
+
+      /* Responsive : petite taille d'écran (mobile) */
+      @media (max-width: 480px) {
+         .g-recaptcha {
+            transform: scale(0.85);
+            /* Réduit la taille du reCAPTCHA pour les petits écrans */
+            transform-origin: 0 0;
+            /* Centre l'échelle à partir du coin supérieur gauche */
+         }
+      }
+
+      /* Responsive : tablettes (écrans moyens) */
+      @media (max-width: 768px) {
+         .g-recaptcha {
+            transform: scale(0.9);
+            /* Réduit la taille du reCAPTCHA pour les tablettes */
+            transform-origin: 0 0;
+         }
+      }
+
+      /* Responsive : écrans plus larges */
+      @media (min-width: 1024px) {
+         .g-recaptcha {
+            max-width: 500px;
+            /* Si l'écran est large, on augmente la largeur maximale */
+         }
+      }
+   </style>
    <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
    <!--[if lt IE 9]>
             <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -175,7 +224,7 @@
                   </div>
                </div>
             </div>
-            
+
             <!-- Header Top Bar End -->
 
             <div class="container">
@@ -189,7 +238,7 @@
                <!-- Logo Start -->
 
                <div class="logo pull-left">
-                  <a href="https://serrurier-casablanca.com"> <img alt="serrurier casablanca de serrurerie à Casablanca et tout le Maroc"class="image-phone"
+                  <a href="https://serrurier-casablanca.com"> <img alt="serrurier casablanca de serrurerie à Casablanca et tout le Maroc" class="image-phone"
                         src="img/logoheader/logo-nss-serrurier.png" /></a>
                </div>
 
@@ -246,76 +295,105 @@
       <!-- contact Start -->
       <div class="container">
          <h1 id="ctactcolor">Contactez NSS SERRURIER pour votre travaux de serrureries</h1>
+         <?php
+         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $recaptchaResponse = $_POST['g-recaptcha-response'];
+            $secretKey = '6LdfMt0rAAAAADxXV7EXS3gGVZMACMCoLnPn3pVn'; // Remplacez par votre clé secrète
+
+            $url = 'https://www.google.com/recaptcha/api/siteverify';
+            $data = [
+               'secret' => $secretKey,
+               'response' => $recaptchaResponse,
+               'remoteip' => $_SERVER['REMOTE_ADDR']
+            ];
+
+            $options = [
+               'http' => [
+                  'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                  'method'  => 'POST',
+                  'content' => http_build_query($data),
+               ]
+            ];
+            $context  = stream_context_create($options);
+            $response = file_get_contents($url, false, $context);
+            $result = json_decode($response);
+
+            if ($result->success) {
+            } else {
+               echo "Erreur : reCAPTCHA non validé.";
+            }
+         }
+         ?>
          <main class="content">
-            
+
             <form id="myForm" method="POST">
                <?php
-            $servername = 'localhost';
-            $username = 'nettoyagecasabla_hvnet_nettoyage';
-            $password = 'azerty@123';
-            $dbname = 'nettoyagecasabla_hvnet_nettoyage';
+               $servername = 'localhost';
+               $username = 'nettoyagecasabla_hvnet_nettoyage';
+               $password = 'azerty@123';
+               $dbname = 'nettoyagecasabla_hvnet_nettoyage';
 
-                  $conn = mysqli_connect($servername, $username, $password, $dbname);
-                  if (!$conn) {
-                     die('Connection failed: ' . mysqli_connect_error());
-                  }
-                  $sqls = '';
+               $conn = mysqli_connect($servername, $username, $password, $dbname);
+               if (!$conn) {
+                  die('Connection failed: ' . mysqli_connect_error());
+               }
+               $sqls = '';
 
-                  $Name = null;
-                  $Ville = null;
-                  $vlVille = null;
-                  $Tel = null;
-                  $Email = null;
-                  $typ = null;
-                  $vltyp = null;
-                  $Subject1 = null;
-                  $vlSubject1 = null;
-                  $Subject2 = null;
-                  $vlSubject2 = null;
-                  $Subject3 = null;
-                  $Message = null;
-                  $a = null;
-                  $eml = null;
-                  $cntsendmail = null;
-                  $motex = null;
-                  $arobax = null;
+               $Name = null;
+               $Ville = null;
+               $vlVille = null;
+               $Tel = null;
+               $Email = null;
+               $typ = null;
+               $vltyp = null;
+               $Subject1 = null;
+               $vlSubject1 = null;
+               $Subject2 = null;
+               $vlSubject2 = null;
+               $Subject3 = null;
+               $Message = null;
+               $a = null;
+               $eml = null;
+               $cntsendmail = null;
+               $motex = null;
+               $arobax = null;
 
-                  if (isset($_POST['senderName'])) {
-                     $Name = $_POST['senderName'];
-                  }
+               if (isset($_POST['senderName'])) {
+                  $Name = $_POST['senderName'];
+               }
 
-                  if (isset($_POST['senderVille'])) {
-                     $Ville = $_POST['senderVille'];
-                  }
+               if (isset($_POST['senderVille'])) {
+                  $Ville = $_POST['senderVille'];
+               }
 
-                  if (isset($_POST['senderTel'])) {
-                     $Tel = $_POST['senderTel'];
-                  }
+               if (isset($_POST['senderTel'])) {
+                  $Tel = $_POST['senderTel'];
+               }
 
-                  if (isset($_POST['senderEmail'])) {
-                     $Email = $_POST['senderEmail'];
-                  }
+               if (isset($_POST['senderEmail'])) {
+                  $Email = $_POST['senderEmail'];
+               }
 
-                  if (isset($_POST['ProOrPar'])) {
-                     $typ = $_POST['ProOrPar'];
-                  }
+               if (isset($_POST['ProOrPar'])) {
+                  $typ = $_POST['ProOrPar'];
+               }
 
-                  if (isset($_POST['messageSubject1'])) {
-                     $Subject1 = $_POST['messageSubject1'];
-                  }
+               if (isset($_POST['messageSubject1'])) {
+                  $Subject1 = $_POST['messageSubject1'];
+               }
 
-                  if (isset($_POST['messageSubject2'])) {
-                     $Subject2 = $_POST['messageSubject2'];
-                  }
+               if (isset($_POST['messageSubject2'])) {
+                  $Subject2 = $_POST['messageSubject2'];
+               }
 
-                  if (isset($_POST['messageSubject3'])) {
-                     $Subject3 = $_POST['messageSubject3'];
-                  }
+               if (isset($_POST['messageSubject3'])) {
+                  $Subject3 = $_POST['messageSubject3'];
+               }
 
-                  if (isset($_POST['senderMessage'])) {
-                     $Message = $_POST['senderMessage'];
-                  }
-                  ?>
+               if (isset($_POST['senderMessage'])) {
+                  $Message = $_POST['senderMessage'];
+               }
+               ?>
                <div id="contactFormHolder">
                   <div class="inputAndLabelCon">
                      <label for="">Nom/Prenom <span class="necessary">*</span></label><br>
@@ -336,17 +414,15 @@
           height: 40px; " required="">
                         <option value='' disabled selected hidden>Choisi la Ville</option>
                         <?php
-                           $query =
-                              'SELECT distinct id,libVille from ville order by libVille asc';
-                           $results = mysqli_query($conn, $query);
-                           while ($rows = mysqli_fetch_assoc(@$results)) { ?>
-                        <option value="<?php echo $rows[
-                                 'id'
-                                 ]; ?>">
-                           <?php echo $rows['libVille']; ?>
-                        </option>
+                        $query =
+                           'SELECT distinct id,libVille from ville order by libVille asc';
+                        $results = mysqli_query($conn, $query);
+                        while ($rows = mysqli_fetch_assoc(@$results)) { ?>
+                           <option value="<?php echo $rows['id']; ?>">
+                              <?php echo $rows['libVille']; ?>
+                           </option>
                         <?php }
-                           ?>
+                        ?>
                      </select>
                   </div>
                   <div class="inputAndLabelCon">
@@ -379,17 +455,15 @@
           height: 40px; " required="">
                         <option value='' disabled selected hidden>Choisi le type de local</option>
                         <?php
-                           $query =
-                              'SELECT distinct id,LibtypeLocal FROM typelocal';
-                           $results = mysqli_query($conn, $query);
-                           while ($rows = mysqli_fetch_assoc(@$results)) { ?>
-                        <option value="<?php echo $rows[
-                                 'id'
-                                 ]; ?>">
-                           <?php echo $rows['LibtypeLocal']; ?>
-                        </option>
+                        $query =
+                           'SELECT distinct id,LibtypeLocal FROM typelocal';
+                        $results = mysqli_query($conn, $query);
+                        while ($rows = mysqli_fetch_assoc(@$results)) { ?>
+                           <option value="<?php echo $rows['id']; ?>">
+                              <?php echo $rows['LibtypeLocal']; ?>
+                           </option>
                         <?php }
-                           ?>
+                        ?>
                      </select>
                   </div>
 
@@ -403,17 +477,15 @@
           height: 40px; " id="pr">
                         <option value='' disabled selected hidden>Choisi le Sujet</option>
                         <?php
-                           $query =
-                              "SELECT distinct id,libelle FROM sujet where typ='Particulier'";
-                           $results = mysqli_query($conn, $query);
-                           while ($rows = mysqli_fetch_assoc(@$results)) { ?>
-                        <option value="<?php echo $rows[
-                                 'id'
-                                 ]; ?>">
-                           <?php echo $rows['libelle']; ?>
-                        </option>
+                        $query =
+                           "SELECT distinct id,libelle FROM sujet where typ='Particulier'";
+                        $results = mysqli_query($conn, $query);
+                        while ($rows = mysqli_fetch_assoc(@$results)) { ?>
+                           <option value="<?php echo $rows['id']; ?>">
+                              <?php echo $rows['libelle']; ?>
+                           </option>
                         <?php }
-                           ?>
+                        ?>
                      </select>
                   </div>
 
@@ -427,17 +499,15 @@
           height: 40px; " id="pf">
                         <option value='' disabled selected hidden>Choisi le Sujet</option>
                         <?php
-                           $query =
-                              "SELECT distinct id,libelle FROM sujet where typ='Professionnel'";
-                           $results = mysqli_query($conn, $query);
-                           while ($rows = mysqli_fetch_assoc(@$results)) { ?>
-                        <option value="<?php echo $rows[
-                                 'id'
-                                 ]; ?>">
-                           <?php echo $rows['libelle']; ?>
-                        </option>
+                        $query =
+                           "SELECT distinct id,libelle FROM sujet where typ='Professionnel'";
+                        $results = mysqli_query($conn, $query);
+                        while ($rows = mysqli_fetch_assoc(@$results)) { ?>
+                           <option value="<?php echo $rows['id']; ?>">
+                              <?php echo $rows['libelle']; ?>
+                           </option>
                         <?php }
-                           ?>
+                        ?>
                      </select>
                   </div>
 
@@ -453,12 +523,16 @@
 
 
                   <script>
-                     $(document).ready(function () { $("#Part").hide(); $("#Prof").hide(); $("#atre").hide(); });
+                     $(document).ready(function() {
+                        $("#Part").hide();
+                        $("#Prof").hide();
+                        $("#atre").hide();
+                     });
                   </script>
 
                   <script>
                      let sltplc = document.querySelector('#TypeLocal');
-                     sltplc.addEventListener('change', function () {
+                     sltplc.addEventListener('change', function() {
 
                         if (this.value == '2') {
                            $("#Prof").show();
@@ -468,35 +542,32 @@
                            $("#pr")[0].selectedIndex = 0;
 
                            let slpf = document.querySelector("#pf");
-                           slpf.addEventListener('change', function () {
+                           slpf.addEventListener('change', function() {
                               if (this.value == 10) {
                                  $("#atre").show();
+                              } else {
+                                 $("#atre").hide();
+                                 $('#atr').val('');
                               }
-                              else {
+                           });
+                        } else
+                        if (this.value == '1') {
+                           $("#Part").show();
+                           $("#atre").hide();
+                           $('#atr').val('');
+                           $("#Prof").hide();
+                           $("#pf")[0].selectedIndex = 0;
+
+                           let slpr = document.querySelector("#pr");
+                           slpr.addEventListener('change', function() {
+                              if (this.value == 5) {
+                                 $("#atre").show();
+                              } else {
                                  $("#atre").hide();
                                  $('#atr').val('');
                               }
                            });
                         }
-                        else
-                           if (this.value == '1') {
-                              $("#Part").show();
-                              $("#atre").hide();
-                              $('#atr').val('');
-                              $("#Prof").hide();
-                              $("#pf")[0].selectedIndex = 0;
-
-                              let slpr = document.querySelector("#pr");
-                              slpr.addEventListener('change', function () {
-                                 if (this.value == 5) {
-                                    $("#atre").show();
-                                 }
-                                 else {
-                                    $("#atre").hide();
-                                    $('#atr').val('');
-                                 }
-                              });
-                           }
                      });
                   </script>
 
@@ -510,78 +581,72 @@
           height: 100px; " type="text" name="senderMessage" placeholder="Message" required=""></textarea><br><br>
 
                   </div>
-                  <div class="inputAndLabelCon">
-                <label id="captchaQuestion"></label><br>
-                <input type="number" placeholder="Entrez bonne reponse " style=" border: 1px solid rgb(10, 10, 10) !important;
-          font-family: arial;
-          font-Weight: bold;
-          font-size: 18px;
-          color: #6c757d;  width: 100%;
-          height: 40px; " id="captchaAnswer"	required><br><br>
-                <span id="errorMessage" class="error"></span>
-            </div>
+                  <div>
+                     <div class="g-recaptcha" data-sitekey="6LdfMt0rAAAAADL41btZuri1ICOpElQvQeOw4dmR" required=""></div>
+                     <div id="recaptchaError" style="color: red; display: none;">Veuillez cocher le reCAPTCHA pour continuer.</div>
+                  </div>
 
 
                   <button id="sendMessageBtn" type="submit" style="color:#fff; width: 100% ; background-color:#000; font-weight:bold"
                      name="sendEmailSubBtn">ENVOYER</button>
 
                   <?php
-                     if (isset($_POST['sendEmailSubBtn'])) {
-                        $eml = test_input($_POST['senderEmail']);
-                        $motex = 'http';
-                        $arobax = '@';
-                        if ($Subject1 != '' && $Subject1 != '5') {
-                           $query = "SELECT libelle FROM sujet where id='$Subject1'";
+                  if (isset($_POST['sendEmailSubBtn'])) {
+                     $eml = test_input($_POST['senderEmail']);
+                     $motex = 'http';
+                     $arobax = '@';
+                     if ($Subject1 != '' && $Subject1 != '5') {
+                        $query = "SELECT libelle FROM sujet where id='$Subject1'";
+                        $results = mysqli_query($conn, $query);
+                        while ($rows = mysqli_fetch_assoc(@$results)) {
+                           $vlSubject1 = $rows['libelle'];
+                        }
+                        $a = $vlSubject1;
+                     } elseif ($Subject1 == '5') {
+                        $a = $Subject3;
+                     }
+
+                     if ($Subject2 != '' && $Subject2 != '10') {
+                        $query = "SELECT libelle FROM sujet where id='$Subject2'";
+                        $results = mysqli_query($conn, $query);
+                        while ($rows = mysqli_fetch_assoc(@$results)) {
+                           $vlSubject2 = $rows['libelle'];
+                        }
+                        $a = $vlSubject2;
+                     } elseif ($Subject2 == '10') {
+                        $a = $Subject3;
+                     }
+
+                     if (
+                        !empty($_POST['senderName']) &&
+                        !empty($_POST['senderVille']) &&
+                        !empty($_POST['senderTel']) &&
+                        !empty($_POST['senderEmail']) &&
+                        !empty($_POST['ProOrPar']) &&
+                        !empty($_POST['senderMessage']) &&
+                        $a != '' &&
+                        filter_var($eml, FILTER_VALIDATE_EMAIL) &&
+                        preg_match('/^[0-9]{10}/', $Tel) &&
+                        strpos($Message, $motex) === false &&
+                        strpos($Message, $arobax) === false
+                     ) {
+                        $sqls = "INSERT INTO contact(nomprenom,ville,Tel,email,typlocal,sujet,messag) VALUES ('$Name','$Ville','$Tel','$Email','$typ','$a','$Message')";
+                        if (mysqli_query($conn, $sqls)) {
+                           $query = "SELECT libVille from ville where id='$Ville'";
                            $results = mysqli_query($conn, $query);
                            while ($rows = mysqli_fetch_assoc(@$results)) {
-                              $vlSubject1 = $rows['libelle'];
+                              $vlVille = $rows['libVille'];
                            }
-                           $a = $vlSubject1;
-                        } elseif ($Subject1 == '5') {
-                           $a = $Subject3;
-                        }
-
-                        if ($Subject2 != '' && $Subject2 != '10') {
-                           $query = "SELECT libelle FROM sujet where id='$Subject2'";
+                           $query = "SELECT LibtypeLocal FROM typelocal where id='$typ'";
                            $results = mysqli_query($conn, $query);
                            while ($rows = mysqli_fetch_assoc(@$results)) {
-                              $vlSubject2 = $rows['libelle'];
+                              $vltyp = $rows['LibtypeLocal'];
                            }
-                           $a = $vlSubject2;
-                        } elseif ($Subject2 == '10') {
-                           $a = $Subject3;
-                        }
-
-                        if (
-                           !empty($_POST['senderName']) &&
-                           !empty($_POST['senderVille']) &&
-                           !empty($_POST['senderTel']) &&
-                           !empty($_POST['senderEmail']) &&
-                           !empty($_POST['ProOrPar']) &&
-                           !empty($_POST['senderMessage']) &&
-                           $a != '' &&
-                           filter_var($eml, FILTER_VALIDATE_EMAIL) &&
-                           preg_match('/^[0-9]{10}/', $Tel) &&
-                           strpos($Message, $motex) === false &&
-                           strpos($Message, $arobax) === false
-                        ) {
-                           $sqls = "INSERT INTO contact(nomprenom,ville,Tel,email,typlocal,sujet,messag) VALUES ('$Name','$Ville','$Tel','$Email','$typ','$a','$Message')";
-                           if (mysqli_query($conn, $sqls)) {
-                              $query = "SELECT libVille from ville where id='$Ville'";
-                              $results = mysqli_query($conn, $query);
-                              while ($rows = mysqli_fetch_assoc(@$results)) {
-                                 $vlVille = $rows['libVille'];
-                              }
-                              $query = "SELECT LibtypeLocal FROM typelocal where id='$typ'";
-                              $results = mysqli_query($conn, $query);
-                              while ($rows = mysqli_fetch_assoc(@$results)) {
-                                 $vltyp = $rows['LibtypeLocal'];
-                              }
-                              /***************send email**********************/
-                              $to = 'admin@nettoyage-casablanca-maroc.com';
-                              $subject = 'DEMANDE DE DEVIS NSS SERRURIER';
-                              $headers = 'From: NSS SERRURIER';
-                              $cntsendmail = "
+                           /***************send email**********************/
+                           $to = 'admin@nettoyage-casablanca-maroc.com';
+                           $subject = 'DEMANDE DE DEVIS NSS SERRURIER';
+                           $headers = 'From: NSS SERRURIER';
+                           $cntsendmail = "
                                           Name          : $Name
                                           Ville         : $vlVille
                                           Tel           : $Tel
@@ -590,25 +655,25 @@
                                           Sujet         : $a
                                           Message       : $Message
                                       ";
-                              mail($to, $subject, $cntsendmail, $headers);
-                              /***************send email*********************/
-                              echo '<script>swal("Message envoyé avec succès!", "votre message a été bien envoyer, notre service concerné prendra en contact selon votre disponibilité!", "success");</script>';
-                           } else {
-                              echo '<script>swal("Message envoyé échoue!", "Votre message non envoyer, veillez remplir tout les champs!", "error");</script>';
-                           }
-                           mysqli_close($conn);
+                           mail($to, $subject, $cntsendmail, $headers);
+                           /***************send email*********************/
+                           echo '<script>swal("Message envoyé avec succès!", "votre message a été bien envoyer, notre service concerné prendra en contact selon votre disponibilité!", "success");</script>';
                         } else {
-                           echo '<script>swal("Message envoyé échoue!", "Votre message non envoyerveillez remplir tout les champs!", "error");</script>';
+                           echo '<script>swal("Message envoyé échoue!", "Votre message non envoyer, veillez remplir tout les champs!", "error");</script>';
                         }
+                        mysqli_close($conn);
+                     } else {
+                        echo '<script>swal("Message envoyé échoue!", "Votre message non envoyerveillez remplir tout les champs!", "error");</script>';
                      }
-                     function test_input($data)
-                     {
-                        $data = trim($data);
-                        $data = stripslashes($data);
-                        $data = htmlspecialchars($data);
-                        return $data;
-                     }
-                     ?>
+                  }
+                  function test_input($data)
+                  {
+                     $data = trim($data);
+                     $data = stripslashes($data);
+                     $data = htmlspecialchars($data);
+                     return $data;
+                  }
+                  ?>
 
                </div>
             </form>
@@ -644,7 +709,7 @@
                   </div>
                </div>
             </section>
-          
+
          </aside>
 
       </div>
@@ -654,79 +719,103 @@
       <!-- Footer Start -->
       <br><br>
       <footer id="footer">
-   <div class="footer-top">
-   <div class="container">
-      <div class="row">
-         <div class="col-md-1">
-            <div class="col">
-               <img id="image-phone" style=" height: 130px;width: 130px;  max-width: 100%; vertical-align: middle;" alt="serrurier casablanca de serrurerie à Casablanca et tout le Maroc logo" src="img/logofooter/LOGO-FOOTER-WINBEST-depannage et installation serrure--SOCIETE-depannage et installation serrure-CASABLANCA.webp">
-              <p>
-                 <strong><span style="color: #FFF;"> NSS SERRURIER </span></strong>, Société de
-                 de travaux installation et depannage serrure à Casablanca Maroc expérimentée et compétitive au service des
-                 particuliers,
-                 des professionnels et des collectivités, spécialisée dans les travaux de serrurerie
-                 exterieure,
-                 intérieure à Casablanca et partout au Maroc.
-              </p>
-           </div>
-         </div>
-         <div class="col-md-5">
-            <h4 style=" color: red; left: 500px;">NOS SERVICES</h4>
-         </div>
-         <div class="col-md-3">
-            <div class="col col-social-icons">
-               <table class="table-footer">
-                  <tbody >
-                     <tr><td><a class="a-tableau" href="ouverture-porte-urgent.html">Ouverture de porte urgente</a></td></tr>
-                     <tr><td><a class="a-tableau" href="ouverture-porte-blindee.html">Ouverture de porte blindée</a></td></tr>
-                     <tr> <td><a class="a-tableau" href="installation-poignee-blidee.html">Installation poignée blidée</a></td></tr>
-                     <tr> <td><a class="a-tableau" href="installation-serrure-multipoints.html"> serrure multipoints</a></td></tr>
-                     <tr><td><a class="a-tableau" href="installation-serrure-carenee.html">Installation serrure carénéé </a></td></tr>
-                  </tbody>
-               </table>
-               <p></p>
+         <div class="footer-top">
+            <div class="container">
+               <div class="row">
+                  <div class="col-md-1">
+                     <div class="col">
+                        <img id="image-phone" style=" height: 130px;width: 130px;  max-width: 100%; vertical-align: middle;" alt="serrurier casablanca de serrurerie à Casablanca et tout le Maroc logo" src="img/logofooter/LOGO-FOOTER-WINBEST-depannage et installation serrure--SOCIETE-depannage et installation serrure-CASABLANCA.webp">
+                        <p>
+                           <strong><span style="color: #FFF;"> NSS SERRURIER </span></strong>, Société de
+                           de travaux installation et depannage serrure à Casablanca Maroc expérimentée et compétitive au service des
+                           particuliers,
+                           des professionnels et des collectivités, spécialisée dans les travaux de serrurerie
+                           exterieure,
+                           intérieure à Casablanca et partout au Maroc.
+                        </p>
+                     </div>
+                  </div>
+                  <div class="col-md-5">
+                     <h4 style=" color: red; left: 500px;">NOS SERVICES</h4>
+                  </div>
+                  <div class="col-md-3">
+                     <div class="col col-social-icons">
+                        <table class="table-footer">
+                           <tbody>
+                              <tr>
+                                 <td><a class="a-tableau" href="ouverture-porte-urgent.html">Ouverture de porte urgente</a></td>
+                              </tr>
+                              <tr>
+                                 <td><a class="a-tableau" href="ouverture-porte-blindee.html">Ouverture de porte blindée</a></td>
+                              </tr>
+                              <tr>
+                                 <td><a class="a-tableau" href="installation-poignee-blidee.html">Installation poignée blidée</a></td>
+                              </tr>
+                              <tr>
+                                 <td><a class="a-tableau" href="installation-serrure-multipoints.html"> serrure multipoints</a></td>
+                              </tr>
+                              <tr>
+                                 <td><a class="a-tableau" href="installation-serrure-carenee.html">Installation serrure carénéé </a></td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <p></p>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="col">
+                        <table class="table-footer">
+                           <tbody>
+                              <tr>
+                                 <td><a class="a-tableau" href="installation-anti-pince.html">Installation cornière anti-pince</a></td>
+                              </tr>
+                              <tr>
+                                 <td><a class="a-tableau" href="serrure-haute-securite.html">
+                                       <il>Serrure de haute sécurité
+                                    </a></td>
+                              <tr>
+                                 <td><a class="a-tableau" href="rideaux-grilles-metallique.html">Rideaux et grilles métalliques</a></td>
+                              </tr>
+                              <tr>
+                                 <td><a class="a-tableau" href="porte-blindee.html">Portes blindées</a></td>
+                              <tr>
+                                 <td><a class="a-tableau" href="travaux-depannage et installation serrure-interieure-casablanca.html">
+                                       <il>Qui sommes nous
+                                    </a></td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+                  <div class="col-md-2">
+                     <div class="col">
+                        <h4 style=" color: red;">CONTACT</h4>
+                        <ul>
+                           <li>Adresse : Casablanca, Maroc</li>
+                           <hr>
+                           <a href="tel:0639461666"></a><a href="tel:0639461666">
+                              <li>Mobile : +212 0639461666</li>
+                           </a>
+                           <hr>
+                           <li> <a href="mailto:nss.serrurier.group@gmail.com" title="Email Us">nss.serrurier.group@gmail.com</a></li>
+                           <hr>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+               <hr />
+               <div class="row">
+                  <div class="col-lg-9 copyright">
+                     &copy; Copyright 2014 - 2021 by <a href="https://serrurier-casablanca.com">NSS SERRURIER</a>. Tous
+                     droits réservés.
+                  </div>
+
+                  <div class="col-lg-3 footer-logo"></div>
+               </div>
             </div>
-         </div>
-         <div class="col-md-4">
-            <div class="col">
-               <table class="table-footer">
-                  <tbody>
-                     <tr><td><a class="a-tableau" href="installation-anti-pince.html">Installation cornière anti-pince</a></td></tr>
-                     <tr><td><a class="a-tableau" href="serrure-haute-securite.html"><il>Serrure de haute sécurité</a></td>
-                     <tr><td><a class="a-tableau" href="rideaux-grilles-metallique.html">Rideaux et grilles métalliques</a></td></tr> 
-                     <tr><td><a class="a-tableau" href="porte-blindee.html">Portes blindées</a></td>
-                     <tr><td><a class="a-tableau" href="travaux-depannage et installation serrure-interieure-casablanca.html"><il>Qui sommes nous</a></td></tr>
-                  </tbody>
-               </table>
-            </div>
-         </div>
-         <div class="col-md-2">
-            <div class="col">
-               <h4 style=" color: red;">CONTACT</h4>
-               <ul>
-                  <li>Adresse : Casablanca, Maroc</li>
-                  <hr>
-             <a href="tel:0639461666"></a><a href="tel:0639461666"><li>Mobile : +212 0639461666</li></a>
-                  <hr>
-                  <li> <a href="mailto:nss.serrurier.group@gmail.com" title="Email Us">nss.serrurier.group@gmail.com</a></li>
-                  <hr>
-               </ul>
-            </div>
-         </div>
-      </div>
-      <hr/>
-      <div class="row">
-         <div class="col-lg-9 copyright">
-            &copy; Copyright 2014 - 2021 by <a href="https://serrurier-casablanca.com">NSS SERRURIER</a>. Tous
-            droits réservés.
          </div>
 
-         <div class="col-lg-3 footer-logo"></div>
-      </div>
-   </div>
-</div>
-
-</footer>
+      </footer>
 
       <!-- The Scripts -->
       <script src="js/jquery.min.js"></script>
@@ -751,39 +840,58 @@
 
    </div>
    <script>
-        // Fonction pour générer un CAPTCHA
-        function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10);
-            const num2 = Math.floor(Math.random() * 10);
-            return { question: `Quel est la somme de ${num1} + ${num2} ?`, answer: num1 + num2 };
-        }
+      // Fonction pour générer un CAPTCHA
+      function generateCaptcha() {
+         const num1 = Math.floor(Math.random() * 10);
+         const num2 = Math.floor(Math.random() * 10);
+         return {
+            question: `Quel est la somme de ${num1} + ${num2} ?`,
+            answer: num1 + num2
+         };
+      }
 
-        // Génération initiale du CAPTCHA
-        let captcha = generateCaptcha();
-        document.getElementById('captchaQuestion').innerText = captcha.question;
+      // Génération initiale du CAPTCHA
+      let captcha = generateCaptcha();
+      document.getElementById('captchaQuestion').innerText = captcha.question;
 
-        // Gestion de l'événement de soumission
-        document.getElementById('myForm').addEventListener('submit', function(event) {
-            const userAnswer = parseInt(document.getElementById('captchaAnswer').value);
-            const errorMessage = document.getElementById('errorMessage');
+      // Gestion de l'événement de soumission
+      document.getElementById('myForm').addEventListener('submit', function(event) {
+         const userAnswer = parseInt(document.getElementById('captchaAnswer').value);
+         const errorMessage = document.getElementById('errorMessage');
 
-            if (userAnswer === captcha.answer) {
-                // Si la réponse est correcte, laisser le formulaire s'envoyer
-                errorMessage.innerText = ''; // Supprime le message d'erreur
-            } else {
-                // Si la réponse est incorrecte, empêcher l'envoi et afficher un message
-                event.preventDefault(); // Bloque l'envoi du formulaire
-                errorMessage.innerText = 'Le nombre est incorrect. Veuillez réessayer.';
-                // Générer un nouveau CAPTCHA
-                captcha = generateCaptcha();
-                document.getElementById('captchaQuestion').innerText = captcha.question;
-                document.getElementById('captchaAnswer').value = ''; // Réinitialiser le champ de réponse
-            }
-        });
-    </script>  
-    
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+         if (userAnswer === captcha.answer) {
+            // Si la réponse est correcte, laisser le formulaire s'envoyer
+            errorMessage.innerText = ''; // Supprime le message d'erreur
+         } else {
+            // Si la réponse est incorrecte, empêcher l'envoi et afficher un message
+            event.preventDefault(); // Bloque l'envoi du formulaire
+            errorMessage.innerText = 'Le nombre est incorrect. Veuillez réessayer.';
+            // Générer un nouveau CAPTCHA
+            captcha = generateCaptcha();
+            document.getElementById('captchaQuestion').innerText = captcha.question;
+            document.getElementById('captchaAnswer').value = ''; // Réinitialiser le champ de réponse
+         }
+      });
+   </script>
+
+   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+
+   <script>
+      document.getElementById('devisForm').addEventListener('submit', function(event) {
+         const recaptchaResponse = grecaptcha.getResponse();
+         const errorDiv = document.getElementById('recaptchaError');
+
+         if (!recaptchaResponse) {
+            event.preventDefault();
+            errorDiv.style.display = 'block'; // Affiche le message d'erreur
+         } else {
+            errorDiv.style.display = 'none'; // Cache le message d'erreur si tout est OK
+         }
+      });
+   </script>
 
 </body>
 
